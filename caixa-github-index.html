@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cadastro de Caixa - Prospera Rio</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#092040;
+  --secondary:#00B7D7;
+  --accent:#ECC203;
+  --neutral:#EFF1F3;
+  --dark:#021738;
+  --white:#FFFFFF;
+  --success:#22C55E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Open Sans',sans-serif;
+  background:linear-gradient(135deg,var(--primary) 0%,#0a274c 60%);
+  color:var(--dark);
+  min-height:100vh;
+  font-size:20px;
+  line-height:1.6;
+  padding:20px;
+}
+.container{max-width:800px;margin:0 auto}
+.header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:30px;
+  background:var(--primary);
+  border-radius:16px;
+  color:var(--white);
+  margin-bottom:25px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+.logo-container{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  margin-bottom:20px;
+}
+.logo{
+  display:block;
+  margin:0 auto;
+  max-width:300px;
+  height:auto;
+  margin-bottom:15px;
+}
+.location-text{
+  color:var(--accent);
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+  font-size:20px;
+  letter-spacing:1.6px;
+  margin-bottom:15px;
+}
+.header h1{
+  font-family:'Montserrat',sans-serif;
+  font-weight:800;
+  font-size:44px;
+  margin-bottom:8px;
+  color:var(--white);
+}
+.header p{
+  font-weight:600;
+  font-size:28px;
+  color:var(--neutral);
+  font-family:'Montserrat',sans-serif;
+}
+.card{
+  background:var(--white);
+  border-radius:14px;
+  padding:25px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  margin-bottom:25px;
+}
+.card-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+  color:var(--white);
+  background:var(--primary);
+  padding:14px 18px;
+  border-radius:10px;
+}
+.card-header i{color:var(--secondary);font-size:22px}
+.card-header h2{
+  font-size:32px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+  color:var(--white);
+}
+.info-box{
+  background:#FFF7ED;
+  border-left:4px solid #FB923C;
+  padding:16px;
+  border-radius:10px;
+  margin-bottom:20px;
+  font-size:18px;
+  font-family:'Open Sans',sans-serif;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.form-group{margin-bottom:16px}
+.form-label{
+  display:block;
+  font-weight:700;
+  margin-bottom:8px;
+  color:var(--dark);
+  font-family:'Montserrat',sans-serif;
+  font-size:20px;
+}
+.form-input{
+  width:100%;
+  padding:12px;
+  border:2px solid #E5E7EB;
+  border-radius:10px;
+  background:#fff;
+  font-size:20px;
+  transition:all 0.3s;
+  font-family:'Open Sans',sans-serif;
+}
+.form-input:focus{
+  outline:none;
+  border-color:var(--secondary);
+  box-shadow:0 0 0 3px rgba(0,183,215,0.1);
+}
+.form-input:read-only{
+  background:#F3F4F6;
+  color:var(--dark);
+  font-weight:700;
+}
+.vendas-section{
+  background:#EFF6FF;
+  border:2px solid var(--secondary);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+.vendas-section h3{
+  color:var(--primary);
+  font-size:22px;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Montserrat',sans-serif;
+  font-weight:700;
+}
+.total-vendas{
+  background:#ECFDF5;
+  border:2px solid #10B981;
+  border-radius:10px;
+  padding:16px;
+  margin-top:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.total-vendas .label{
+  font-weight:700;
+  font-size:20px;
+  color:#065F46;
+  font-family:'Montserrat',sans-serif;
+}
+.total-vendas .valor{
+  font-size:32px;
+  color:#10B981;
+  font-weight:800;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:14px 24px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  font-size:20px;
+  transition:transform 0.2s;
+  font-family:'Montserrat',sans-serif;
+  width:100%;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-success{background:linear-gradient(135deg,var(--success),#16A34A);color:#fff}
+.loading{
+  position:fixed;
+  inset:0;
+  background:rgba(255,255,255,0.95);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #E5E7EB;
+  border-left-color:var(--secondary);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alert{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:2000;
+  padding:18px 24px;
+  border-radius:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  font-weight:700;
+  max-width:400px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  animation:slideIn 0.3s ease;
+  font-size:18px;
+  font-family:'Open Sans',sans-serif;
+}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.alert.success{background:#ECFDF5;color:#065F46;border:2px solid#10B981}
+.alert.warning{background:#FFFBEB;color:#92400E;border:2px solid #FBBF24}
+.alert.error{background:#FEE2E2;color:#991B1B;border:2px solid #EF4444}
+@media (max-width:900px){
+  .form-grid{grid-template-columns:1fr}
+  .header h1{font-size:32px}
+  .header p{font-size:20px}
+  .logo{max-width:200px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="logo-container">
+      <img class="logo" src="https://lh3.googleusercontent.com/d/1x5sNkC9vd7CI78y0xdkWvgoadxPEMcIf=w800" alt="Prospera Rio"/>
+      <div class="location-text">MARE - JACAREZINHO</div>
+    </div>
+    <h1>Cadastro de Caixa</h1>
+    <p>Sistema de Registro</p>
+  </header>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-wallet"></i>
+      <h2>Fechar Caixa do Dia</h2>
+    </div>
+
+    <div class="info-box">
+      <strong>Instrucoes:</strong> Preencha todos os campos com os valores do dia. Use PONTO para separar decimais.
+      <br>
+      <strong>Exemplos:</strong> 100 ou 100.00 ou 1258.50
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input id="data" type="date" class="form-input"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor de Abertura (R$)</label>
+        <input id="abertura" type="text" class="form-input" placeholder="100.00"/>
+      </div>
+    </div>
+
+    <div class="vendas-section">
+      <h3>
+        <i class="fas fa-money-bill-wave"></i>
+        Vendas do Dia por Forma de Pagamento
+      </h3>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Vendas em Dinheiro (R$)</label>
+          <input id="dinheiro" type="text" class="form-input" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vendas no Debito (R$)</label>
+          <input id="debito" type="text" class="form-input" placeholder="0.00"/>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Vendas no Credito (R$)</label>
+          <input id="credito" type="text" class="form-input" placeholder="0.00"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vendas via PIX (R$)</label>
+          <input id="pix" type="text" class="form-input" placeholder="0.00"/>
+        </div>
+      </div>
+
+      <div id="totalVendasBox" class="total-vendas" style="display:none">
+        <span class="label">Total de Vendas:</span>
+        <strong class="valor" id="totalVendas">R$ 0,00</strong>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Retirada para Encerramento (R$)</label>
+        <input id="retirada" type="text" class="form-input" placeholder="0.00"/>
+        <small style="color:#6B7280;font-size:16px">Ex: Retiradas, contas, fornecedores</small>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Saldo Final (R$)</label>
+        <input id="saldoFinal" type="text" class="form-input" readonly/>
+      </div>
+    </div>
+
+    <button id="btnFecharCaixa" class="btn btn-success">
+      <i class="fas fa-save"></i> Enviar Dados do Caixa
+    </button>
+  </div>
+</div>
+
+<div class="loading" id="loading">
+  <div style="text-align:center">
+    <div class="spinner"></div>
+    <div style="margin-top:12px;font-weight:800;color:var(--primary);font-size:20px">Enviando...</div>
+  </div>
+</div>
+
+<script>
+// CONFIGURACAO: Cole aqui a URL do seu Google Apps Script Web App
+const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_GOOGLE_APPS_SCRIPT';
+
+function formatNum(v) {
+  if (!v) return 0;
+  v = String(v).trim();
+  v = v.replace(/\s/g, '');
+  v = v.replace('R$', '');
+  const temVirgula = v.includes(',');
+  const temPonto = v.includes('.');
+  if (temVirgula && temPonto) {
+    v = v.replace(/\./g, '').replace(',', '.');
+  } else if (temVirgula && !temPonto) {
+    v = v.replace(',', '.');
+  }
+  return parseFloat(v) || 0;
+}
+
+function formatMoney(v) {
+  return new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(v || 0);
+}
+
+function showLoading() {
+  document.getElementById('loading').style.display = 'flex';
+}
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+function showAlert(msg, type) {
+  const id = 'alert-' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'alert ' + type;
+  div.innerHTML = '<div><strong>' + msg + '</strong></div>';
+  document.body.appendChild(div);
+  setTimeout(function() {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }, 4000);
+}
+
+function calcularTotais() {
+  const abertura = formatNum(document.getElementById('abertura').value);
+  const dinheiro = formatNum(document.getElementById('dinheiro').value);
+  const debito = formatNum(document.getElementById('debito').value);
+  const credito = formatNum(document.getElementById('credito').value);
+  const pix = formatNum(document.getElementById('pix').value);
+  const retirada = formatNum(document.getElementById('retirada').value);
+
+  const totalVendas = dinheiro + debito + credito + pix;
+  const saldoFinal = abertura + totalVendas - retirada;
+
+  document.getElementById('totalVendas').textContent = formatMoney(totalVendas);
+  document.getElementById('saldoFinal').value = formatMoney(saldoFinal);
+
+  if (totalVendas > 0) {
+    document.getElementById('totalVendasBox').style.display = 'flex';
+  } else {
+    document.getElementById('totalVendasBox').style.display = 'none';
+  }
+}
+
+function fecharCaixa() {
+  const dataInput = document.getElementById('data').value;
+  const abertura = formatNum(document.getElementById('abertura').value);
+
+  if (!dataInput) {
+    showAlert('Por favor, informe a data!', 'warning');
+    return;
+  }
+
+  if (abertura <= 0) {
+    showAlert('Informe o valor de abertura!', 'warning');
+    return;
+  }
+
+  // Converter data para formato correto (sem timezone)
+  const partesData = dataInput.split('-');
+  const ano = partesData[0];
+  const mes = partesData[1];
+  const dia = partesData[2];
+  const dataFormatada = dia + '/' + mes + '/' + ano;
+
+  const dados = {
+    data: dataFormatada,
+    abertura: abertura,
+    dinheiro: formatNum(document.getElementById('dinheiro').value),
+    debito: formatNum(document.getElementById('debito').value),
+    credito: formatNum(document.getElementById('credito').value),
+    pix: formatNum(document.getElementById('pix').value),
+    retirada: formatNum(document.getElementById('retirada').value),
+    totalVendas: formatNum(document.getElementById('totalVendas').textContent),
+    saldoFinal: formatNum(document.getElementById('saldoFinal').value)
+  };
+
+  enviarDados(dados);
+}
+
+function enviarDados(dados) {
+  showLoading();
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados)
+  })
+  .then(function() {
+    hideLoading();
+    showAlert('Caixa registrado com sucesso!', 'success');
+    limparFormulario();
+  })
+  .catch(function(error) {
+    hideLoading();
+    showAlert('Erro ao enviar dados. Tente novamente.', 'error');
+    console.error('Erro:', error);
+  });
+}
+
+function limparFormulario() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  const dataFormatada = ano + '-' + mes + '-' + dia;
+  
+  document.getElementById('data').value = dataFormatada;
+  document.getElementById('abertura').value = '';
+  document.getElementById('dinheiro').value = '';
+  document.getElementById('debito').value = '';
+  document.getElementById('credito').value = '';
+  document.getElementById('pix').value = '';
+  document.getElementById('retirada').value = '';
+  document.getElementById('saldoFinal').value = '';
+  document.getElementById('totalVendasBox').style.display = 'none';
+}
+
+document.getElementById('abertura').addEventListener('input', calcularTotais);
+document.getElementById('dinheiro').addEventListener('input', calcularTotais);
+document.getElementById('debito').addEventListener('input', calcularTotais);
+document.getElementById('credito').addEventListener('input', calcularTotais);
+document.getElementById('pix').addEventListener('input', calcularTotais);
+document.getElementById('retirada').addEventListener('input', calcularTotais);
+
+document.getElementById('btnFecharCaixa').addEventListener('click', fecharCaixa);
+
+document.addEventListener('DOMContentLoaded', function() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  const dataFormatada = ano + '-' + mes + '-' + dia;
+  
+  document.getElementById('data').value = dataFormatada;
+});
+</script>
+</body>
+</html>
