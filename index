@@ -336,7 +336,7 @@ body{
 
 <script>
 // CONFIGURACAO: Cole aqui a URL do seu Google Apps Script Web App
-const SCRIPT_URL = 'COLE_AQUI_A_URL_DO_GOOGLE_APPS_SCRIPT';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmDUsflNoslt2dhPlAXCG6jJuYXJhrjTMSPvwoQ7as6A-AutiA9CMiqV2qAmJJ_TlC/exec';
 
 function formatNum(v) {
   if (!v) return 0;
