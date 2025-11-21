@@ -21,6 +21,14 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 .card-header i{color:var(--secondary);font-size:22px}
 .card-header h2{font-size:32px;font-family:'Montserrat',sans-serif;font-weight:700;color:var(--white)}
 .info-box{background:#FFF7ED;border-left:4px solid #FB923C;padding:16px;border-radius:10px;margin-bottom:20px;font-size:18px}
+.data-display{background:linear-gradient(135deg,#DBEAFE,#BFDBFE);border:3px solid #3B82F6;border-radius:12px;padding:20px;margin-bottom:20px;text-align:center}
+.data-display .label{font-size:16px;color:#1E40AF;font-weight:600;margin-bottom:8px}
+.data-display .valor{font-size:36px;color:#3B82F6;font-weight:800;font-family:'Montserrat',sans-serif}
+.turno-selector{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px}
+.turno-btn{padding:20px;border-radius:12px;border:3px solid #E5E7EB;background:#F9FAFB;cursor:pointer;text-align:center;transition:all 0.3s;font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px}
+.turno-btn:hover{border-color:var(--secondary);transform:translateY(-2px)}
+.turno-btn.active{background:var(--secondary);color:white;border-color:var(--secondary)}
+.turno-btn i{font-size:32px;margin-bottom:10px;display:block}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-weight:700;margin-bottom:8px;color:var(--dark);font-family:'Montserrat',sans-serif;font-size:20px}
@@ -44,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 .alert.success{background:#ECFDF5;color:#065F46;border:2px solid#10B981}
 .alert.warning{background:#FFFBEB;color:#92400E;border:2px solid #FBBF24}
 .alert.error{background:#FEE2E2;color:#991B1B;border:2px solid #EF4444}
-@media (max-width:900px){.form-grid{grid-template-columns:1fr}.header h1{font-size:32px}.header p{font-size:20px}.logo{max-width:200px}}
+@media (max-width:900px){.form-grid{grid-template-columns:1fr}.turno-selector{grid-template-columns:1fr}.header h1{font-size:32px}.header p{font-size:20px}.logo{max-width:200px}}
 </style>
 </head>
 <body>
@@ -57,31 +65,42 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
   </header>
 
   <div class="card">
+    <div class="data-display">
+      <div class="label">Data do Fechamento</div>
+      <div class="valor" id="dataDisplay">21/11/2025</div>
+    </div>
+
     <div class="card-header">
-      <i class="fas fa-wallet"></i>
-      <h2>Fechar Caixa do Dia</h2>
+      <i class="fas fa-clock"></i>
+      <h2>Selecione o Turno</h2>
+    </div>
+
+    <div class="turno-selector">
+      <div class="turno-btn active" data-turno="Dia" onclick="selecionarTurno('Dia')">
+        <i class="fas fa-sun"></i>
+        CAIXA DIA
+      </div>
+      <div class="turno-btn" data-turno="Noite" onclick="selecionarTurno('Noite')">
+        <i class="fas fa-moon"></i>
+        CAIXA NOITE
+      </div>
     </div>
 
     <div class="info-box">
-      <strong>Instruções:</strong> Preencha todos os campos com os valores do dia. Use PONTO para separar decimais.
+      <strong>Instruções:</strong> Preencha todos os campos com os valores do turno. Use PONTO para separar decimais.
       <br><strong>Exemplos:</strong> 100 ou 100.00 ou 1258.50
     </div>
 
     <form id="formCaixa" style="display:none"></form>
+    <input type="hidden" id="turnoSelecionado" value="Dia"/>
 
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Data</label>
-        <input id="data" type="date" class="form-input"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Valor de Abertura (R$)</label>
-        <input id="abertura" type="text" class="form-input" placeholder="100.00"/>
-      </div>
+    <div class="form-group">
+      <label class="form-label">Valor de Abertura (R$)</label>
+      <input id="abertura" type="text" class="form-input" placeholder="100.00"/>
     </div>
 
     <div class="vendas-section">
-      <h3><i class="fas fa-money-bill-wave"></i>Vendas do Dia por Forma de Pagamento</h3>
+      <h3><i class="fas fa-money-bill-wave"></i>Vendas do Turno por Forma de Pagamento</h3>
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Vendas em Dinheiro (R$)</label>
@@ -137,6 +156,19 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmDUsflNoslt2dhPlAXCG6jJuYXJhrjTMSPvwoQ7as6A-AutiA9CMiqV2qAmJJ_TlC/exec';
+
+let turnoAtual = 'Dia';
+
+function selecionarTurno(turno) {
+  turnoAtual = turno;
+  document.getElementById('turnoSelecionado').value = turno;
+  
+  document.querySelectorAll('.turno-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+  
+  event.target.closest('.turno-btn').classList.add('active');
+}
 
 function formatNum(v){
   if(!v || v === '') return 0;
@@ -203,21 +235,18 @@ function calcularTotais(){
 }
 
 function fecharCaixa(){
-  const dataInput = document.getElementById('data').value;
   const abertura = formatNum(document.getElementById('abertura').value);
-  
-  if(!dataInput){
-    showAlert('Por favor, informe a data!','warning');
-    return;
-  }
   
   if(abertura <= 0){
     showAlert('Informe o valor de abertura!','warning');
     return;
   }
   
-  const partesData = dataInput.split('-');
-  const dataFormatada = partesData[2]+'/'+partesData[1]+'/'+partesData[0];
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2,'0');
+  const mes = String(hoje.getMonth()+1).padStart(2,'0');
+  const ano = hoje.getFullYear();
+  const dataFormatada = dia+'/'+mes+'/'+ano;
   
   const dinheiro = formatNum(document.getElementById('dinheiro').value);
   const debito = formatNum(document.getElementById('debito').value);
@@ -229,6 +258,7 @@ function fecharCaixa(){
   
   const dados = {
     data: dataFormatada,
+    turno: turnoAtual,
     abertura: abertura,
     dinheiro: dinheiro,
     debito: debito,
@@ -239,7 +269,7 @@ function fecharCaixa(){
     saldoFinal: saldoFinal
   };
   
-  console.log('=== DADOS A ENVIAR ===');
+  console.log('=== ENVIANDO ===');
   console.log(JSON.stringify(dados, null, 2));
   
   enviarDados(dados);
@@ -254,7 +284,6 @@ function enviarDados(dados){
   form.action = SCRIPT_URL;
   form.target = 'hidden_iframe';
   
-  // Cria campos ocultos para cada dado
   for(let key in dados) {
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -263,7 +292,6 @@ function enviarDados(dados){
     form.appendChild(input);
   }
   
-  // Configurar o iframe para detectar quando o envio termina
   const iframe = document.getElementById('hidden_iframe');
   
   iframe.onload = function() {
@@ -279,13 +307,6 @@ function enviarDados(dados){
 }
 
 function limparFormulario(){
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth()+1).padStart(2,'0');
-  const dia = String(hoje.getDate()).padStart(2,'0');
-  const dataFormatada = ano+'-'+mes+'-'+dia;
-  
-  document.getElementById('data').value = dataFormatada;
   document.getElementById('abertura').value = '';
   document.getElementById('dinheiro').value = '';
   document.getElementById('debito').value = '';
@@ -294,6 +315,19 @@ function limparFormulario(){
   document.getElementById('retirada').value = '';
   document.getElementById('saldoFinal').value = '';
   document.getElementById('totalVendasBox').style.display = 'none';
+  
+  selecionarTurno('Dia');
+  document.querySelectorAll('.turno-btn')[0].classList.add('active');
+}
+
+function atualizarDataDisplay(){
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2,'0');
+  const mes = String(hoje.getMonth()+1).padStart(2,'0');
+  const ano = hoje.getFullYear();
+  const dataFormatada = dia+'/'+mes+'/'+ano;
+  
+  document.getElementById('dataDisplay').textContent = dataFormatada;
 }
 
 document.getElementById('abertura').addEventListener('input', calcularTotais);
@@ -305,12 +339,7 @@ document.getElementById('retirada').addEventListener('input', calcularTotais);
 document.getElementById('btnFecharCaixa').addEventListener('click', fecharCaixa);
 
 document.addEventListener('DOMContentLoaded', function(){
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth()+1).padStart(2,'0');
-  const dia = String(hoje.getDate()).padStart(2,'0');
-  const dataFormatada = ano+'-'+mes+'-'+dia;
-  document.getElementById('data').value = dataFormatada;
+  atualizarDataDisplay();
 });
 </script>
 </body>
