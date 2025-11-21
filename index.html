@@ -254,6 +254,7 @@ function enviarDados(dados){
   form.action = SCRIPT_URL;
   form.target = 'hidden_iframe';
   
+  // Cria campos ocultos para cada dado
   for(let key in dados) {
     const input = document.createElement('input');
     input.type = 'hidden';
@@ -262,6 +263,7 @@ function enviarDados(dados){
     form.appendChild(input);
   }
   
+  // Configurar o iframe para detectar quando o envio termina
   const iframe = document.getElementById('hidden_iframe');
   
   iframe.onload = function() {
