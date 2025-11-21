@@ -21,6 +21,7 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 .card-header i{color:var(--secondary);font-size:22px}
 .card-header h2{font-size:32px;font-family:'Montserrat',sans-serif;font-weight:700;color:var(--white)}
 .info-box{background:#FFF7ED;border-left:4px solid #FB923C;padding:16px;border-radius:10px;margin-bottom:20px;font-size:18px}
+.error-box{background:#FEE2E2;border-left:4px solid #EF4444;padding:16px;border-radius:10px;margin-bottom:20px;font-size:16px;display:none;color:#991B1B}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-weight:700;margin-bottom:8px;color:var(--dark);font-family:'Montserrat',sans-serif;font-size:20px}
@@ -34,6 +35,7 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 .total-vendas .valor{font-size:32px;color:#10B981;font-weight:800}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:20px;transition:transform 0.2s;font-family:'Montserrat',sans-serif;width:100%}
 .btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
 .btn-success{background:linear-gradient(135deg,var(--success),#16A34A);color:#fff}
 .loading{position:fixed;inset:0;background:rgba(255,255,255,0.95);display:none;align-items:center;justify-content:center;z-index:9999}
 .spinner{width:50px;height:50px;border:5px solid #E5E7EB;border-left-color:var(--secondary);border-radius:50%;animation:spin 1s linear infinite}
@@ -50,7 +52,7 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 <div class="container">
   <header class="header">
     <img class="logo" src="https://lh3.googleusercontent.com/d/1x5sNkC9vd7CI78y0xdkWvgoadxPEMcIf=w800" alt="Prospera Rio"/>
-    <div class="location-text">MARE - JACAREZINHO</div>
+    <div class="location-text">MARÉ - JACAREZINHO</div>
     <h1>Cadastro de Caixa</h1>
     <p>Sistema de Registro</p>
   </header>
@@ -62,8 +64,13 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
     </div>
 
     <div class="info-box">
-      <strong>Instrucoes:</strong> Preencha todos os campos com os valores do dia. Use PONTO para separar decimais.
+      <strong>Instruções:</strong> Preencha todos os campos com os valores do dia. Use PONTO para separar decimais.
       <br><strong>Exemplos:</strong> 100 ou 100.00 ou 1258.50
+    </div>
+
+    <div id="errorBox" class="error-box">
+      <strong>Erro Detectado:</strong>
+      <div id="errorMessage"></div>
     </div>
 
     <div class="form-grid">
@@ -85,13 +92,13 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
           <input id="dinheiro" type="text" class="form-input" placeholder="0.00"/>
         </div>
         <div class="form-group">
-          <label class="form-label">Vendas no Debito (R$)</label>
+          <label class="form-label">Vendas no Débito (R$)</label>
           <input id="debito" type="text" class="form-input" placeholder="0.00"/>
         </div>
       </div>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Vendas no Credito (R$)</label>
+          <label class="form-label">Vendas no Crédito (R$)</label>
           <input id="credito" type="text" class="form-input" placeholder="0.00"/>
         </div>
         <div class="form-group">
@@ -133,16 +140,200 @@ body{font-family:'Open Sans',sans-serif;background:linear-gradient(135deg,var(--
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmDUsflNoslt2dhPlAXCG6jJuYXJhrjTMSPvwoQ7as6A-AutiA9CMiqV2qAmJJ_TlC/exec';
 
-function formatNum(v){if(!v)return 0;v=String(v).trim();v=v.replace(/\s/g,'');v=v.replace('R$','');const temVirgula=v.includes(',');const temPonto=v.includes('.');if(temVirgula&&temPonto){v=v.replace(/\./g,'').replace(',','.')}else if(temVirgula&&!temPonto){v=v.replace(',','.')}return parseFloat(v)||0}
-function formatMoney(v){return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0)}
-function showLoading(){document.getElementById('loading').style.display='flex'}
-function hideLoading(){document.getElementById('loading').style.display='none'}
-function showAlert(msg,type){const id='alert-'+Date.now();const div=document.createElement('div');div.id=id;div.className='alert '+type;div.innerHTML='<div><strong>'+msg+'</strong></div>';document.body.appendChild(div);setTimeout(function(){const el=document.getElementById(id);if(el)el.remove()},4000)}
-function calcularTotais(){const abertura=formatNum(document.getElementById('abertura').value);const dinheiro=formatNum(document.getElementById('dinheiro').value);const debito=formatNum(document.getElementById('debito').value);const credito=formatNum(document.getElementById('credito').value);const pix=formatNum(document.getElementById('pix').value);const retirada=formatNum(document.getElementById('retirada').value);const totalVendas=dinheiro+debito+credito+pix;const saldoFinal=abertura+totalVendas-retirada;document.getElementById('totalVendas').textContent=formatMoney(totalVendas);document.getElementById('saldoFinal').value=formatMoney(saldoFinal);if(totalVendas>0){document.getElementById('totalVendasBox').style.display='flex'}else{document.getElementById('totalVendasBox').style.display='none'}}
-function fecharCaixa(){const dataInput=document.getElementById('data').value;const abertura=formatNum(document.getElementById('abertura').value);if(!dataInput){showAlert('Por favor, informe a data!','warning');return}if(abertura<=0){showAlert('Informe o valor de abertura!','warning');return}const partesData=dataInput.split('-');const ano=partesData[0];const mes=partesData[1];const dia=partesData[2];const dataFormatada=dia+'/'+mes+'/'+ano;const dados={data:dataFormatada,abertura:abertura,dinheiro:formatNum(document.getElementById('dinheiro').value),debito:formatNum(document.getElementById('debito').value),credito:formatNum(document.getElementById('credito').value),pix:formatNum(document.getElementById('pix').value),totalVendas:formatNum(document.getElementById('totalVendas').textContent),retirada:formatNum(document.getElementById('retirada').value),saldoFinal:formatNum(document.getElementById('saldoFinal').value)};console.log('Enviando dados:',dados);enviarDados(dados)}
-function enviarDados(dados){showLoading();fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)}).then(function(){hideLoading();showAlert('Caixa registrado com sucesso!','success');limparFormulario()}).catch(function(error){hideLoading();showAlert('Erro ao enviar dados. Tente novamente.','error');console.error('Erro:',error)})}
-function limparFormulario(){const hoje=new Date();const ano=hoje.getFullYear();const mes=String(hoje.getMonth()+1).padStart(2,'0');const dia=String(hoje.getDate()).padStart(2,'0');const dataFormatada=ano+'-'+mes+'-'+dia;document.getElementById('data').value=dataFormatada;document.getElementById('abertura').value='';document.getElementById('dinheiro').value='';document.getElementById('debito').value='';document.getElementById('credito').value='';document.getElementById('pix').value='';document.getElementById('retirada').value='';document.getElementById('saldoFinal').value='';document.getElementById('totalVendasBox').style.display='none'}
-document.getElementById('abertura').addEventListener('input',calcularTotais);document.getElementById('dinheiro').addEventListener('input',calcularTotais);document.getElementById('debito').addEventListener('input',calcularTotais);document.getElementById('credito').addEventListener('input',calcularTotais);document.getElementById('pix').addEventListener('input',calcularTotais);document.getElementById('retirada').addEventListener('input',calcularTotais);document.getElementById('btnFecharCaixa').addEventListener('click',fecharCaixa);document.addEventListener('DOMContentLoaded',function(){const hoje=new Date();const ano=hoje.getFullYear();const mes=String(hoje.getMonth()+1).padStart(2,'0');const dia=String(hoje.getDate()).padStart(2,'0');const dataFormatada=ano+'-'+mes+'-'+dia;document.getElementById('data').value=dataFormatada});
+function formatNum(v){
+  if(!v || v === '') return 0;
+  v = String(v).trim();
+  v = v.replace(/\s/g,'');
+  v = v.replace('R$','');
+  const temVirgula = v.includes(',');
+  const temPonto = v.includes('.');
+  if(temVirgula && temPonto){
+    v = v.replace(/\./g,'').replace(',','.');
+  } else if(temVirgula && !temPonto){
+    v = v.replace(',','.');
+  }
+  const num = parseFloat(v);
+  return isNaN(num) ? 0 : num;
+}
+
+function formatMoney(v){
+  return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);
+}
+
+function showLoading(){
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('btnFecharCaixa').disabled = true;
+}
+
+function hideLoading(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('btnFecharCaixa').disabled = false;
+}
+
+function showAlert(msg, type){
+  const id='alert-'+Date.now();
+  const div=document.createElement('div');
+  div.id=id;
+  div.className='alert '+type;
+  div.innerHTML='<div><strong>'+msg+'</strong></div>';
+  document.body.appendChild(div);
+  setTimeout(function(){
+    const el=document.getElementById(id);
+    if(el) el.remove();
+  }, 5000);
+}
+
+function showError(msg){
+  const errorBox = document.getElementById('errorBox');
+  const errorMessage = document.getElementById('errorMessage');
+  errorMessage.innerHTML = msg;
+  errorBox.style.display = 'block';
+  setTimeout(function(){
+    errorBox.style.display = 'none';
+  }, 10000);
+}
+
+function calcularTotais(){
+  const abertura = formatNum(document.getElementById('abertura').value);
+  const dinheiro = formatNum(document.getElementById('dinheiro').value);
+  const debito = formatNum(document.getElementById('debito').value);
+  const credito = formatNum(document.getElementById('credito').value);
+  const pix = formatNum(document.getElementById('pix').value);
+  const retirada = formatNum(document.getElementById('retirada').value);
+  
+  const totalVendas = dinheiro + debito + credito + pix;
+  const saldoFinal = abertura + totalVendas - retirada;
+  
+  document.getElementById('totalVendas').textContent = formatMoney(totalVendas);
+  document.getElementById('saldoFinal').value = formatMoney(saldoFinal);
+  
+  if(totalVendas > 0){
+    document.getElementById('totalVendasBox').style.display='flex';
+  } else {
+    document.getElementById('totalVendasBox').style.display='none';
+  }
+}
+
+function fecharCaixa(){
+  const dataInput = document.getElementById('data').value;
+  const abertura = formatNum(document.getElementById('abertura').value);
+  
+  if(!dataInput){
+    showAlert('Por favor, informe a data!','warning');
+    return;
+  }
+  
+  if(abertura <= 0){
+    showAlert('Informe o valor de abertura!','warning');
+    return;
+  }
+  
+  const partesData = dataInput.split('-');
+  const dataFormatada = partesData[2]+'/'+partesData[1]+'/'+partesData[0];
+  
+  const dinheiro = formatNum(document.getElementById('dinheiro').value);
+  const debito = formatNum(document.getElementById('debito').value);
+  const credito = formatNum(document.getElementById('credito').value);
+  const pix = formatNum(document.getElementById('pix').value);
+  const totalVendas = dinheiro + debito + credito + pix;
+  const retirada = formatNum(document.getElementById('retirada').value);
+  const saldoFinal = abertura + totalVendas - retirada;
+  
+  const dados = {
+    data: dataFormatada,
+    abertura: abertura,
+    dinheiro: dinheiro,
+    debito: debito,
+    credito: credito,
+    pix: pix,
+    totalVendas: totalVendas,
+    retirada: retirada,
+    saldoFinal: saldoFinal
+  };
+  
+  console.log('=== DADOS A SEREM ENVIADOS ===');
+  console.log(JSON.stringify(dados, null, 2));
+  
+  enviarDados(dados);
+}
+
+function enviarDados(dados){
+  showLoading();
+  
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(dados),
+    redirect: 'follow'
+  })
+  .then(response => {
+    console.log('Status da resposta:', response.status);
+    console.log('Tipo de resposta:', response.type);
+    return response.text();
+  })
+  .then(text => {
+    console.log('Resposta recebida:', text);
+    hideLoading();
+    
+    try {
+      const resultado = JSON.parse(text);
+      if(resultado.status === 'success'){
+        showAlert('✓ Caixa registrado com sucesso!','success');
+        limparFormulario();
+      } else {
+        showError('Erro ao salvar: ' + resultado.message);
+        showAlert('Erro ao salvar os dados','error');
+      }
+    } catch(e) {
+      console.log('Resposta não é JSON, mas request foi enviado');
+      showAlert('✓ Dados enviados com sucesso!','success');
+      limparFormulario();
+    }
+  })
+  .catch(error => {
+    console.error('ERRO COMPLETO:', error);
+    hideLoading();
+    showError('Erro de conexão: ' + error.message + '<br>Verifique se a URL do script está correta.');
+    showAlert('Erro ao enviar dados. Verifique o console.','error');
+  });
+}
+
+function limparFormulario(){
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth()+1).padStart(2,'0');
+  const dia = String(hoje.getDate()).padStart(2,'0');
+  const dataFormatada = ano+'-'+mes+'-'+dia;
+  
+  document.getElementById('data').value = dataFormatada;
+  document.getElementById('abertura').value = '';
+  document.getElementById('dinheiro').value = '';
+  document.getElementById('debito').value = '';
+  document.getElementById('credito').value = '';
+  document.getElementById('pix').value = '';
+  document.getElementById('retirada').value = '';
+  document.getElementById('saldoFinal').value = '';
+  document.getElementById('totalVendasBox').style.display = 'none';
+}
+
+document.getElementById('abertura').addEventListener('input', calcularTotais);
+document.getElementById('dinheiro').addEventListener('input', calcularTotais);
+document.getElementById('debito').addEventListener('input', calcularTotais);
+document.getElementById('credito').addEventListener('input', calcularTotais);
+document.getElementById('pix').addEventListener('input', calcularTotais);
+document.getElementById('retirada').addEventListener('input', calcularTotais);
+document.getElementById('btnFecharCaixa').addEventListener('click', fecharCaixa);
+
+document.addEventListener('DOMContentLoaded', function(){
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth()+1).padStart(2,'0');
+  const dia = String(hoje.getDate()).padStart(2,'0');
+  const dataFormatada = ano+'-'+mes+'-'+dia;
+  document.getElementById('data').value = dataFormatada;
+});
 </script>
 </body>
 </html>
